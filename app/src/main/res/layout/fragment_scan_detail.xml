@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F8F7">
+
+    <!-- Top Bar -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_back"
+            app:tint="#1F2933"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Scan Details"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#1F2933"/>
+    </LinearLayout>
+
+    <!-- Temperature -->
+    <TextView
+        android:id="@+id/tempText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="39.7 °C"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:textColor="#1F2933"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"/>
+
+    <!-- Status -->
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="High"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#D32F2F"
+        app:layout_constraintTop_toBottomOf="@id/tempText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Time -->
+    <TextView
+        android:id="@+id/timeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12 Feb · 6:45 AM"
+        android:textSize="14sp"
+        android:textColor="#6B7280"
+        app:layout_constraintTop_toBottomOf="@id/statusText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp"/>
+
+    <!-- Explanation -->
+
+    <!-- Info container -->
+    <LinearLayout
+        android:id="@+id/infoContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="#F1F5F3"
+        android:layout_margin="24dp"
+        app:layout_constraintTop_toBottomOf="@id/timeText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Explanation -->
+        <TextView
+            android:id="@+id/explanationText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Illness causes inflammation.\nInflammation increases blood flow.\nIncreased blood flow raises surface temperature.\nThermal imaging detects this early."
+            android:textSize="14sp"
+            android:textColor="#374151"/>
+
+        <!-- Section title -->
+        <TextView
+            android:id="@+id/guidanceTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="What this means"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textColor="#1F2933"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Guidance -->
+        <TextView
+            android:id="@+id/guidanceText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guidance goes here"
+            android:textSize="14sp"
+            android:textColor="#1F2933"
+            android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
+
+    <!-- Confidence note (OUTSIDE container) -->
+    <TextView
+        android:id="@+id/confidenceNote"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Note: Thermal readings may be influenced by environmental conditions, distance, animal movement, or surface moisture. Results are intended for screening purposes only."
+        android:textSize="12sp"
+        android:textColor="#6B7280"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/infoContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

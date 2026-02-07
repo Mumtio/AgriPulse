@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Greeting -->
+        <TextView
+            android:id="@+id/txtGreeting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#2F7D5A"
+            android:layout_marginBottom="24dp" />
+
+        <!-- SCAN -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardScan"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginBottom="14dp"
+            app:cardBackgroundColor="#2F7D5A"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="SCAN"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- ANALYTICS -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardAnalytics"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginBottom="14dp"
+            app:cardBackgroundColor="#2F7D5A"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="ANALYTICS"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- HISTORY -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardHistory"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginBottom="14dp"
+            app:cardBackgroundColor="#2F7D5A"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="HISTORY"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- SETTINGS -->
+
+        <!-- EXIT -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonExit"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="EXIT"
+            android:textAllCaps="true"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="24dp"
+            app:cornerRadius="14dp"
+            app:backgroundTint="#2F7D5A" />
+
+
+    </LinearLayout>
+</ScrollView>
