@@ -11,24 +11,27 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.flir.atlassdk.acecamerasample.storage.ScanRecord;
+import com.flir.atlassdk.acecamerasample.storage.RiskStatus;
+
+import java.io.File;
 import java.util.Locale;
 
 public class ScanFragment extends Fragment {
 
-    private static final String TEST_ANIMAL_ID = "DC-014";
-
-    private OverlayView overlayView;
+    private OverlayViewFrontend overlayView;
     private Button shareButton;
-    private ScanResult lastScan;
+    private Button detailsButton;
+    private View secondaryActions;
+    private View statusIndicator;
+    private ScanRecord lastScan;
 
     @Nullable
     @Override
@@ -37,12 +40,16 @@ public class ScanFragment extends Fragment {
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_scan, container, false);
+        return inflater.inflate(R.layout.fragment_scan_new, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Show thermal camera view when entering scan screen
+        MainActivity mainActivity = (MainActivity) requireActivity();
+        mainActivity.showThermalView(true);
 
         View overlay = view.findViewById(R.id.scanOverlay);
         overlayView = view.findViewById(R.id.overlayView);
@@ -53,133 +60,133 @@ public class ScanFragment extends Fragment {
 
         Button scanButton = view.findViewById(R.id.buttonScan);
         shareButton = view.findViewById(R.id.buttonShare);
+        detailsButton = view.findViewById(R.id.buttonDetails);
+        secondaryActions = view.findViewById(R.id.secondaryActions);
+        statusIndicator = view.findViewById(R.id.statusIndicator);
         ImageButton backButton = view.findViewById(R.id.buttonBack);
 
         explanationText.setText("");
-        statusText.setText("");
+        statusText.setText("Ready to scan");
         tempText.setText("--.- °C");
-        shareButton.setVisibility(View.GONE);
+        secondaryActions.setVisibility(View.GONE);
 
         Animation pulse = AnimationUtils.loadAnimation(requireContext(), R.anim.pulse);
         overlay.startAnimation(pulse);
 
         scanButton.setOnClickListener(v -> {
-            statusText.setText("Analyzing...");
+            // Disable button during scan
+            scanButton.setEnabled(false);
+            scanButton.setText("SCANNING...");
+            
+            statusText.setText("Analyzing thermal data...");
             explanationText.setText("");
+            tempText.setText("--.- °C");
             overlay.clearAnimation();
-
-            double temp = 38.0 + Math.random() * 2.0;
-            tempText.setText(String.format(Locale.getDefault(), "%.1f °C", temp));
-
-            view.postDelayed(() -> {
-
-                // ===== 1. CREATE SCAN RESULT =====
-                String time = new SimpleDateFormat(
-                        "dd MMM · hh:mm a", Locale.getDefault()
-                ).format(new Date());
-
-                lastScan = new ScanResult(temp, "", time);
-                lastScan.keypoints = new ArrayList<>();
-                lastScan.rois = new ArrayList<>();
-
-                // ===== 2. DETERMINE STATUS =====
-                if (temp < 38.5) {
-                    lastScan.status = "Normal";
-                    lastScan.riskStatus = RiskStatus.NORMAL;
-                    statusText.setText("✓ Normal temperature");
-                } else if (temp < 39.5) {
-                    lastScan.status = "Elevated";
-                    lastScan.riskStatus = RiskStatus.ELEVATED ;
-                    statusText.setText("⚠ Slightly elevated");
-                } else {
-                    lastScan.status = "High";
-                    lastScan.riskStatus = RiskStatus.SUSPECTED;
-                    statusText.setText("🚨 High temperature detected");
-                }
-
-                // ===== 3. MOCK KEYPOINTS =====
-                lastScan.keypoints.add(new Keypoint("udder", 540f, 820f, 0.9f));
-                lastScan.keypoints.add(new Keypoint("hoof_fl", 360f, 1040f, 0.85f));
-
-                // ===== 4. MOCK ROI =====
-                lastScan.rois.add(new ROIResult(
-                        "Udder",
-                        lastScan.temperature,
-                        lastScan.temperature + 0.3,
-                        0.2,
-                        lastScan.riskStatus,
-                        "ΔT above ambient"
-                ));
-
-                // ===== 5. EXPLANATION =====
-                StringBuilder explanation = new StringBuilder();
-
-                for (ROIResult roi : lastScan.rois) {
-                    if (roi.status == RiskStatus.SUSPECTED) {
-                        explanation.append("• ")
-                                .append(roi.reason)
-                                .append("\n");
+            
+            // Request scan from MainActivity backend
+            mainActivity.requestScan(new MainActivity.ScanCallback() {
+                @Override
+                public void onScanComplete(ScanRecord result) {
+                    // Re-enable button
+                    scanButton.setEnabled(true);
+                    scanButton.setText("SCAN");
+                    
+                    // Store result
+                    lastScan = result;
+                    
+                    Log.d("ScanFragment", "Scan complete: " + result.animalId + 
+                          ", temp=" + result.temperature + "°C, status=" + result.overallStatus);
+                    
+                    // Update temperature display
+                    tempText.setText(String.format(Locale.getDefault(), 
+                        "%.1f °C", result.temperature));
+                    
+                    // Update status based on backend result
+                    if (result.overallStatus.equals("SUSPECTED")) {
+                        statusText.setText("🚨 " + result.statusReason);
+                        statusText.setTextColor(0xFFEF4444);  // Red
+                        statusIndicator.setBackgroundResource(R.drawable.status_dot_red);
+                        secondaryActions.setVisibility(View.VISIBLE);
+                    } else {
+                        statusText.setText("✓ Normal temperature");
+                        statusText.setTextColor(0xFF10B981);  // Green
+                        statusIndicator.setBackgroundResource(R.drawable.status_dot_green);
+                        secondaryActions.setVisibility(View.VISIBLE);
                     }
+                    
+                    // Build explanation from ROIs
+                    StringBuilder explanation = new StringBuilder();
+                    if (result.rois != null && !result.rois.isEmpty()) {
+                        for (ScanRecord.ROIResult roi : result.rois) {
+                            if (roi.status == RiskStatus.SUSPECTED) {
+                                explanation.append("• ")
+                                    .append(roi.reason)
+                                    .append("\n");
+                            }
+                        }
+                    }
+                    
+                    if (explanation.length() == 0) {
+                        explanationText.setText("No abnormal patterns detected");
+                    } else {
+                        explanationText.setText("Why?\n" + explanation);
+                    }
+                    
+                    // Update overlay with real keypoints and ROIs
+                    if (result.keypoints != null && result.rois != null) {
+                        overlayView.update(result.keypoints, result.rois);
+                        Log.d("ScanFragment", "Overlay updated: " + result.keypoints.size() + 
+                              " keypoints, " + result.rois.size() + " ROIs");
+                    }
+                    
+                    // Show location info in explanation if available
+                    if (result.latitude != 0 && result.longitude != 0) {
+                        String locationStr = String.format(Locale.US, 
+                            "\n📍 Location: %.4f°, %.4f°", 
+                            result.latitude, result.longitude);
+                        explanationText.append(locationStr);
+                    }
+                    
+                    // Restart animation
+                    overlay.startAnimation(pulse);
+                    
+                    Log.d("ScanFragment", "UI update complete");
                 }
-
-                if (explanation.length() == 0) {
-                    explanationText.setText("No abnormal patterns detected");
-                } else {
-                    explanationText.setText("Why?\n" + explanation);
+                
+                @Override
+                public void onScanError(String error) {
+                    // Re-enable button
+                    scanButton.setEnabled(true);
+                    scanButton.setText("SCAN");
+                    
+                    Log.e("ScanFragment", "Scan error: " + error);
+                    statusText.setText("Error: " + error);
+                    statusText.setTextColor(0xFFEF5350);  // Red
+                    explanationText.setText("Please try again");
+                    tempText.setText("--.- °C");
+                    overlay.startAnimation(pulse);
                 }
-
-                // ===== 6. OVERLAY UPDATE =====
-                overlayView.update(lastScan.keypoints, lastScan.rois);
-
-                // ===== 7. BUILD REPORT =====
-                StringBuilder report = new StringBuilder();
-                report.append("AgriPulse Thermal Scan Report\n");
-                report.append("--------------------------------\n");
-                report.append("Animal ID: ").append(TEST_ANIMAL_ID).append("\n");
-                report.append("Temperature: ")
-                        .append(String.format("%.1f °C", lastScan.temperature)).append("\n");
-                report.append("Status: ").append(lastScan.status).append("\n");
-                report.append("Time: ").append(lastScan.time).append("\n\n");
-                report.append("Findings:\n");
-
-                for (ROIResult roi : lastScan.rois) {
-                    report.append("- ")
-                            .append(roi.name)
-                            .append(": ")
-                            .append(String.format("%.1f °C", roi.meanTempC))
-                            .append(" (")
-                            .append(roi.status)
-                            .append(")\n");
-                }
-
-                lastScan.reportText = report.toString();
-
-                // ===== 8. SAVE =====
-                ScanStorage.saveScan(requireContext(), lastScan, TEST_ANIMAL_ID);
-
-                // ===== 9. SHARE BUTTON =====
-                shareButton.setVisibility(
-                        lastScan.riskStatus == RiskStatus.SUSPECTED
-                                ? View.VISIBLE
-                                : View.GONE
-                );
-
-                overlay.startAnimation(pulse);
-
-            }, 1500);
+            });
         });
 
         shareButton.setOnClickListener(v -> {
-            if (lastScan == null || lastScan.reportText == null) return;
+            if (lastScan == null) {
+                Log.w("ScanFragment", "No scan data to share");
+                return;
+            }
 
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_SUBJECT,
-                    "AgriPulse – Suspected Fever Alert");
-            intent.putExtra(Intent.EXTRA_TEXT,
-                    lastScan.reportText);
+            // Show export options dialog
+            showExportDialog(lastScan);
+        });
 
-            startActivity(Intent.createChooser(intent, "Share report via"));
+        detailsButton.setOnClickListener(v -> {
+            if (lastScan == null) {
+                Log.w("ScanFragment", "No scan data to show");
+                return;
+            }
+
+            // Show detailed information dialog
+            showDetailsDialog(lastScan);
         });
 
         backButton.setOnClickListener(v ->
@@ -187,5 +194,141 @@ public class ScanFragment extends Fragment {
                         .getSupportFragmentManager()
                         .popBackStack()
         );
+    }
+    
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Hide thermal view when leaving scan screen
+        MainActivity mainActivity = (MainActivity) requireActivity();
+        mainActivity.showThermalView(false);
+    }
+    
+    /**
+     * Show export options dialog
+     */
+    private void showExportDialog(ScanRecord scan) {
+        MainActivity mainActivity = (MainActivity) requireActivity();
+        com.flir.atlassdk.acecamerasample.export.ScanExporter exporter = mainActivity.getScanExporter();
+        
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Share Scan Report");
+        builder.setMessage("Choose export format:");
+        
+        // Option 1: Share via apps (text + attachment)
+        builder.setPositiveButton("Share via Apps", (dialog, which) -> {
+            try {
+                exporter.shareViaIntent(scan);
+                Toast.makeText(requireContext(), "Opening share menu...", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Log.e("ScanFragment", "Share error: " + e.getMessage());
+                Toast.makeText(requireContext(), "Share failed: " + e.getMessage(), 
+                    Toast.LENGTH_SHORT).show();
+            }
+        });
+        
+        // Option 2: Export to CSV
+        builder.setNeutralButton("Export CSV", (dialog, which) -> {
+            try {
+                File csvFile = exporter.exportToCSV(scan);
+                if (csvFile != null) {
+                    Toast.makeText(requireContext(), 
+                        "CSV exported: " + csvFile.getName(), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(requireContext(), "CSV export failed", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                Log.e("ScanFragment", "CSV export error: " + e.getMessage());
+                Toast.makeText(requireContext(), "Export failed: " + e.getMessage(), 
+                    Toast.LENGTH_SHORT).show();
+            }
+        });
+        
+        // Option 3: Export to Text
+        builder.setNegativeButton("Export Text", (dialog, which) -> {
+            try {
+                File textFile = exporter.exportToText(scan);
+                if (textFile != null) {
+                    Toast.makeText(requireContext(), 
+                        "Report exported: " + textFile.getName(), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(requireContext(), "Text export failed", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                Log.e("ScanFragment", "Text export error: " + e.getMessage());
+                Toast.makeText(requireContext(), "Export failed: " + e.getMessage(), 
+                    Toast.LENGTH_SHORT).show();
+            }
+        });
+        
+        builder.show();
+    }
+    
+    /**
+     * Show detailed scan information dialog
+     */
+    private void showDetailsDialog(ScanRecord scan) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Scan Details - " + scan.animalId);
+        
+        StringBuilder details = new StringBuilder();
+        
+        // Animal Info
+        details.append("═══ ANIMAL INFO ═══\n");
+        details.append("ID: ").append(scan.animalId).append("\n");
+        details.append("Species: ").append(scan.species != null ? scan.species : "Cattle").append("\n");
+        details.append("Scan Time: ").append(new java.text.SimpleDateFormat("MMM dd, yyyy HH:mm", 
+            Locale.US).format(new java.util.Date(scan.time))).append("\n\n");
+        
+        // Location Info
+        details.append("═══ LOCATION ═══\n");
+        if (scan.latitude != 0 && scan.longitude != 0) {
+            details.append(String.format(Locale.US, "Latitude: %.6f°\n", scan.latitude));
+            details.append(String.format(Locale.US, "Longitude: %.6f°\n", scan.longitude));
+        } else {
+            details.append("Location not available\n");
+        }
+        details.append("\n");
+        
+        // Health Status
+        details.append("═══ HEALTH STATUS ═══\n");
+        details.append("Overall: ").append(scan.overallStatus).append("\n");
+        details.append("Confidence: ").append(String.format(Locale.US, "%.1f%%", 
+            scan.confidence * 100)).append("\n");
+        if (scan.statusReason != null && !scan.statusReason.isEmpty()) {
+            details.append("Reason: ").append(scan.statusReason).append("\n");
+        }
+        details.append("\n");
+        
+        // Body Part Analysis
+        details.append("═══ BODY PART ANALYSIS ═══\n");
+        if (scan.rois != null && !scan.rois.isEmpty()) {
+            for (ScanRecord.ROIResult roi : scan.rois) {
+                details.append("\n").append(roi.name.toUpperCase()).append(":\n");
+                details.append(String.format(Locale.US, "  Temp: %.1f°C\n", roi.meanTempC));
+                details.append(String.format(Locale.US, "  Peak: %.1f°C\n", roi.t95TempC));
+                details.append(String.format(Locale.US, "  Std Dev: %.2f\n", roi.stdDev));
+                details.append("  Status: ").append(roi.status).append("\n");
+                if (roi.reason != null && !roi.reason.isEmpty()) {
+                    details.append("  Note: ").append(roi.reason).append("\n");
+                }
+            }
+        } else {
+            details.append("No detailed body part data available\n");
+        }
+        
+        builder.setMessage(details.toString());
+        builder.setPositiveButton("Close", null);
+        builder.setNeutralButton("Copy to Clipboard", (dialog, which) -> {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) 
+                requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip = android.content.ClipData.newPlainText(
+                "Scan Details", details.toString());
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(requireContext(), "Details copied to clipboard", 
+                Toast.LENGTH_SHORT).show();
+        });
+        
+        builder.show();
     }
 }

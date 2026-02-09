@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.flir.atlassdk.acecamerasample.storage.ScanRecord;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,27 +34,42 @@ public class HistoryFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.animalRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
+        // Get backend modules from MainActivity
+        MainActivity mainActivity = (MainActivity) requireActivity();
+        com.flir.atlassdk.acecamerasample.storage.ScanStorage scanStorage = mainActivity.getScanStorage();
+        com.flir.atlassdk.acecamerasample.tracking.AnimalTracker animalTracker = mainActivity.getAnimalTracker();
 
         List<Animal> animals = new ArrayList<>();
 
-        List<String> animalIds =
-                ScanStorage.getAllAnimalIds(requireContext());
+        // Get all animal IDs from tracker
+        List<String> animalIds = animalTracker.getAllAnimalIds();
 
         for (String animalId : animalIds) {
+            // Get animal profile from tracker
+            com.flir.atlassdk.acecamerasample.tracking.AnimalProfile profile = 
+                animalTracker.getProfile(animalId);
+            
+            if (profile == null || profile.totalScans == 0) continue;
 
-            List<ScanResult> scans =
-                    ScanStorage.getScansForAnimal(requireContext(), animalId);
+            // Get scans for this animal from storage
+            List<ScanRecord> scans = scanStorage.getScansForAnimal(animalId);
 
             if (scans.isEmpty()) continue;
 
             // LAST scan = most recent
-            ScanResult last = scans.get(scans.size() - 1);
+            ScanRecord last = scans.get(scans.size() - 1);
+
+            // Ensure status is not null - map from overallStatus if needed
+            String displayStatus = last.status;
+            if (displayStatus == null) {
+                displayStatus = "SUSPECTED".equals(last.overallStatus) ? "High" : "Normal";
+            }
 
             animals.add(new Animal(
                     animalId,
-                    "Cattle",                 // for now (can improve later)
+                    last.species != null ? last.species : "Cattle",  // Use real species from detection
                     last.temperature,
-                    last.status,
+                    displayStatus,
                     last.time
             ));
         }

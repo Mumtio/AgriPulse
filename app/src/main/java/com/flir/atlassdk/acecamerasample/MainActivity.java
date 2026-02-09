@@ -55,10 +55,10 @@ import com.flir.thermalsdk.image.measurements.MeasurementShapeCollection;
 
 /**
  * This sample application connects to an ACE camera and renders received images to GLSurfaceView.
+ * Integrated with AgriPulse backend for thermal analysis and fever detection.
  */
 public class MainActivity extends AppCompatActivity {
     private volatile double latestTemperatureC = Double.NaN;
-
 
     private static final String TAG = "MainActivity";
 
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean snapshotRequested;
 
     // enable or disable measurements for live stream
-    private boolean enableMeasurements = true;
+    private boolean enableMeasurements = false;
 
     // label showing app status, connection status, errors
     private TextView appStatus;
@@ -95,6 +95,48 @@ public class MainActivity extends AppCompatActivity {
 
     // path where snapshot images will be stored
     private String imagesRoot;
+
+    // frame counter for thermal data logging
+    private int frameCounter = 0;
+
+    // ===== BACKEND MODULES =====
+    // Mock animal detector
+    private com.flir.atlassdk.acecamerasample.detection.MockAnimalDetector animalDetector;
+    private com.flir.atlassdk.acecamerasample.detection.DetectionResult currentDetection = null;
+    
+    // Thermal ROI analyzer
+    private com.flir.atlassdk.acecamerasample.thermal.ThermalROIAnalyzer roiAnalyzer;
+    
+    // Fever detector
+    private com.flir.atlassdk.acecamerasample.health.FeverDetector feverDetector;
+    
+    // Scan storage
+    private com.flir.atlassdk.acecamerasample.storage.ScanStorage scanStorage;
+    
+    // Thermal overlay view
+    private com.flir.atlassdk.acecamerasample.ui.ThermalOverlayView overlayView;
+    
+    // Scan exporter
+    private com.flir.atlassdk.acecamerasample.export.ScanExporter scanExporter;
+    
+    // Animal tracker
+    private com.flir.atlassdk.acecamerasample.tracking.AnimalTracker animalTracker;
+    
+    // Batch scan manager
+    private com.flir.atlassdk.acecamerasample.batch.BatchScanManager batchScanManager;
+    
+    // Location tracker
+    private com.flir.atlassdk.acecamerasample.location.LocationTracker locationTracker;
+    
+    // Scan request callback
+    private ScanCallback scanCallback;
+    private boolean scanRequested = false;
+    
+    // Callback interface for scan results
+    public interface ScanCallback {
+        void onScanComplete(com.flir.atlassdk.acecamerasample.storage.ScanRecord result);
+        void onScanError(String error);
+    }
 
     // you can easily switch between running the sample on emulator or on real camera by setting aceRealCameraInterface to appropriate value
     // by default we run on a real ACE camera
@@ -133,6 +175,21 @@ public class MainActivity extends AppCompatActivity {
 
         // after initialization of the SDK (via ThermalSdkAndroid.init) we can access default palettes from PaletteManager
         currentPalette = PaletteManager.getDefaultPalettes().get(0);
+        
+        // Initialize backend modules
+        animalDetector = new com.flir.atlassdk.acecamerasample.detection.MockAnimalDetector();
+        roiAnalyzer = new com.flir.atlassdk.acecamerasample.thermal.ThermalROIAnalyzer();
+        feverDetector = new com.flir.atlassdk.acecamerasample.health.FeverDetector();
+        scanStorage = new com.flir.atlassdk.acecamerasample.storage.ScanStorage(getApplicationContext());
+        scanExporter = new com.flir.atlassdk.acecamerasample.export.ScanExporter(this);
+        animalTracker = new com.flir.atlassdk.acecamerasample.tracking.AnimalTracker(this, scanStorage);
+        batchScanManager = new com.flir.atlassdk.acecamerasample.batch.BatchScanManager();
+        locationTracker = new com.flir.atlassdk.acecamerasample.location.LocationTracker(this);
+        
+        ThermalLog.d(TAG, "Backend modules initialized");
+        ThermalLog.d(TAG, "Scan storage: " + scanStorage.getScanCount() + " scans");
+        ThermalLog.d(TAG, "Animal tracker: " + animalTracker.getAnimalCount() + " animals");
+        
         startDiscoveryAndConnectionAndStream();
 
     }
@@ -310,6 +367,50 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    
+    /**
+     * Public method for fragments to request a scan
+     */
+    public void requestScan(ScanCallback callback) {
+        this.scanCallback = callback;
+        this.scanRequested = true;
+        ThermalLog.d(TAG, "Scan requested by fragment");
+    }
+    
+    /**
+     * Show or hide the thermal GLSurfaceView
+     */
+    public void showThermalView(boolean show) {
+        runOnUiThread(() -> {
+            if (glSurfaceView != null) {
+                glSurfaceView.setVisibility(show ? android.view.View.VISIBLE : android.view.View.GONE);
+                ThermalLog.d(TAG, "Thermal view visibility: " + (show ? "VISIBLE" : "GONE"));
+            }
+        });
+    }
+    
+    /**
+     * Getter methods for backend modules
+     */
+    public com.flir.atlassdk.acecamerasample.tracking.AnimalTracker getAnimalTracker() {
+        return animalTracker;
+    }
+    
+    public com.flir.atlassdk.acecamerasample.storage.ScanStorage getScanStorage() {
+        return scanStorage;
+    }
+    
+    public com.flir.atlassdk.acecamerasample.export.ScanExporter getScanExporter() {
+        return scanExporter;
+    }
+    
+    public com.flir.atlassdk.acecamerasample.location.LocationTracker getLocationTracker() {
+        return locationTracker;
+    }
+    
+    public com.flir.atlassdk.acecamerasample.batch.BatchScanManager getBatchScanManager() {
+        return batchScanManager;
+    }
 
 
     /**
@@ -466,6 +567,12 @@ public class MainActivity extends AppCompatActivity {
                             ThermalLog.e(TAG, "Unable to take snapshot: " + e.getMessage());
                         }
                     }
+                    
+                    // Process scan request from fragments
+                    if (scanRequested) {
+                        scanRequested = false;
+                        processScan(thermalImage);
+                    }
                 });
 
                 // request the camera to push the frame buffer for drawing on the GLSurfaceView
@@ -474,5 +581,134 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    
+    /**
+     * Process a scan request - extract thermal data, detect animal, analyze ROIs, detect fever
+     */
+    private void processScan(com.flir.thermalsdk.image.ThermalImage thermalImage) {
+        try {
+            ThermalLog.d(TAG, "Processing scan...");
+            
+            // 1. Get thermal image dimensions
+            int width = thermalImage.getWidth();
+            int height = thermalImage.getHeight();
+            Pair<ThermalValue, ThermalValue> range = camera.glGetScaleRange();
+            
+            ThermalLog.d(TAG, "Thermal image: " + width + "x" + height + ", range: " + range.first + " to " + range.second);
+            
+            // 2. Run mock animal detection
+            com.flir.atlassdk.acecamerasample.detection.DetectionResult detection = 
+                animalDetector.detectAnimal(width, height);
+            
+            ThermalLog.d(TAG, "Detection: " + detection.species + " (conf=" + detection.overallConfidence + ")");
+            ThermalLog.d(TAG, "Keypoints: " + detection.keypoints.size());
+            
+            // 3. Extract ROI temperatures for each keypoint
+            java.util.Map<String, com.flir.atlassdk.acecamerasample.thermal.ROITemperature> bodyPartTemps = 
+                new java.util.HashMap<>();
+            
+            for (com.flir.atlassdk.acecamerasample.detection.Keypoint kp : detection.keypoints) {
+                com.flir.atlassdk.acecamerasample.thermal.ROITemperature roiTemp = 
+                    roiAnalyzer.analyzeROI(thermalImage, kp);
+                bodyPartTemps.put(kp.name, roiTemp);
+                ThermalLog.d(TAG, "ROI " + kp.name + ": " + roiTemp.toString());
+            }
+            
+            // 4. Detect fever
+            com.flir.atlassdk.acecamerasample.health.HealthStatus healthStatus = 
+                feverDetector.detectFever(bodyPartTemps);
+            
+            ThermalLog.d(TAG, "Health status: " + healthStatus.toString());
+            
+            // 5. Get location
+            com.flir.atlassdk.acecamerasample.location.LocationTracker.LocationData location = 
+                locationTracker.getCurrentLocation();
+            
+            // 6. Generate animal ID
+            String animalId = animalTracker.generateNextAnimalID();
+            
+            // 7. Convert ROI temperatures to storage format
+            java.util.Map<String, com.flir.atlassdk.acecamerasample.storage.ScanRecord.BodyPartData> bodyParts = 
+                new java.util.HashMap<>();
+            
+            for (java.util.Map.Entry<String, com.flir.atlassdk.acecamerasample.thermal.ROITemperature> entry : 
+                 bodyPartTemps.entrySet()) {
+                com.flir.atlassdk.acecamerasample.thermal.ROITemperature roi = entry.getValue();
+                bodyParts.put(entry.getKey(), 
+                    new com.flir.atlassdk.acecamerasample.storage.ScanRecord.BodyPartData(
+                        roi.bodyPart, roi.t95, roi.mean, roi.std, roi.sampleCount
+                    ));
+            }
+            
+            // 8. Create scan record
+            com.flir.atlassdk.acecamerasample.storage.ScanRecord record = 
+                new com.flir.atlassdk.acecamerasample.storage.ScanRecord(
+                    0,  // Will be assigned by storage
+                    System.currentTimeMillis(),
+                    animalId,
+                    detection.species,
+                    bodyParts,
+                    healthStatus.status,
+                    healthStatus.reason,
+                    healthStatus.confidence,
+                    null,  // No thermal snapshot path for now
+                    location.latitude,
+                    location.longitude
+                );
+            
+            // 9. Populate visual data for UI (keypoints and ROIs)
+            record.keypoints = new java.util.ArrayList<>();
+            for (com.flir.atlassdk.acecamerasample.detection.Keypoint kp : detection.keypoints) {
+                record.keypoints.add(kp);
+            }
+            
+            record.rois = new java.util.ArrayList<>();
+            for (java.util.Map.Entry<String, com.flir.atlassdk.acecamerasample.thermal.ROITemperature> entry : 
+                 bodyPartTemps.entrySet()) {
+                com.flir.atlassdk.acecamerasample.thermal.ROITemperature roi = entry.getValue();
+                record.rois.add(new com.flir.atlassdk.acecamerasample.storage.ScanRecord.ROIResult(
+                    roi.bodyPart,
+                    roi.mean - 273.15,  // Convert Kelvin to Celsius
+                    roi.t95 - 273.15,
+                    roi.std,
+                    healthStatus.status.equals("SUSPECTED") ? 
+                        com.flir.atlassdk.acecamerasample.storage.RiskStatus.SUSPECTED : 
+                        com.flir.atlassdk.acecamerasample.storage.RiskStatus.NORMAL,
+                    healthStatus.reason
+                ));
+            }
+            
+            // 10. Save scan to storage
+            long scanId = scanStorage.saveScan(record);
+            record.scanId = scanId;
+            
+            ThermalLog.d(TAG, "Scan saved with ID: " + scanId);
+            
+            // 11. Update animal profile
+            animalTracker.updateProfile(record);
+            
+            // 12. Generate report text
+            record.reportText = com.flir.atlassdk.acecamerasample.export.ReportFormatter
+                .formatTextReport(record);
+            
+            // 13. Callback to UI on main thread
+            final com.flir.atlassdk.acecamerasample.storage.ScanRecord finalRecord = record;
+            if (scanCallback != null) {
+                runOnUiThread(() -> {
+                    scanCallback.onScanComplete(finalRecord);
+                    ThermalLog.d(TAG, "Scan callback completed");
+                });
+            }
+            
+        } catch (Exception e) {
+            ThermalLog.e(TAG, "Error processing scan: " + e.getMessage());
+            e.printStackTrace();
+            
+            if (scanCallback != null) {
+                final String errorMsg = e.getMessage();
+                runOnUiThread(() -> scanCallback.onScanError(errorMsg));
+            }
+        }
+    }
 
 }

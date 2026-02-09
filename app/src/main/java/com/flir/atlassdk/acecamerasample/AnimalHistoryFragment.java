@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.flir.atlassdk.acecamerasample.storage.ScanRecord;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class AnimalHistoryFragment extends Fragment {
     private static final String ARG_TYPE = "animal_type";
 
     private ScanHistoryAdapter adapter;
-    private List<ScanResult> scans;
+    private List<ScanRecord> scans;
 
     public static AnimalHistoryFragment newInstance(String id, String type) {
         AnimalHistoryFragment fragment = new AnimalHistoryFragment();
@@ -67,15 +69,21 @@ public class AnimalHistoryFragment extends Fragment {
         scans = new ArrayList<>();
 
         adapter = new ScanHistoryAdapter(scans, scan -> {
+            // Ensure status is not null
+            String displayStatus = scan.status;
+            if (displayStatus == null) {
+                displayStatus = "SUSPECTED".equals(scan.overallStatus) ? "High" : "Normal";
+            }
+            
             Fragment fragment = ScanDetailFragment.newInstance(
                     scan.temperature,
-                    scan.status,
+                    displayStatus,
                     scan.time
             );
 
             if (scans.size() >= 2) {
-                ScanResult prev = scans.get(scans.size() - 2);
-                ScanResult curr = scans.get(scans.size() - 1);
+                ScanRecord prev = scans.get(scans.size() - 2);
+                ScanRecord curr = scans.get(scans.size() - 1);
 
                 rising = curr.temperature - prev.temperature >= 0.5;
             }
@@ -97,10 +105,12 @@ public class AnimalHistoryFragment extends Fragment {
 
         String animalId = getArguments().getString(ARG_ID);
 
+        // Get backend storage from MainActivity
+        MainActivity mainActivity = (MainActivity) requireActivity();
+        com.flir.atlassdk.acecamerasample.storage.ScanStorage scanStorage = mainActivity.getScanStorage();
+
         scans.clear();
-        scans.addAll(
-                ScanStorage.getScansForAnimal(requireContext(), animalId)
-        );
+        scans.addAll(scanStorage.getScansForAnimal(animalId));
 
         adapter.notifyDataSetChanged();
     }

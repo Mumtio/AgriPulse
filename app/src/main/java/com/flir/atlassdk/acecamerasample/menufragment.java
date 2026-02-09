@@ -97,8 +97,8 @@ public class menufragment extends Fragment {
         view.findViewById(R.id.cardHistory).setOnClickListener(v ->
                 openFragment(new HistoryFragment()));
 
-        //view.findViewById(R.id.cardSettings).setOnClickListener(v ->
-            //    openFragment(new SettingsFragment()));
+        view.findViewById(R.id.cardSettings).setOnClickListener(v ->
+                openFragment(new SettingsFragment()));
 
         view.findViewById(R.id.buttonExit).setOnClickListener(v ->
                 requireActivity().finish());

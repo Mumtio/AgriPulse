@@ -1,20 +1,19 @@
 package com.flir.atlassdk.acecamerasample;
 
-enum RiskStatus {
-    NORMAL, SUSPECTED, ELEVATED
-}
+// Package-private classes - only accessible within the same package
+// These are kept here for backward compatibility with existing code in the main package
 
 enum TrendStatus {
     IMPROVING, DECLINING, STABLE
 }
 
 class Keypoint {
-    String name;      // "left_eye", "udder", "hoof_fl" ...
-    float x;          // screen or thermal frame coords
-    float y;
-    float confidence; // 0..1
+    public String name;      // "left_eye", "udder", "hoof_fl" ...
+    public float x;          // screen or thermal frame coords
+    public float y;
+    public float confidence; // 0..1
 
-    Keypoint(String name, float x, float y, float confidence) {
+    public Keypoint(String name, float x, float y, float confidence) {
         this.name = name;
         this.x = x;
         this.y = y;
@@ -23,18 +22,18 @@ class Keypoint {
 }
 
 class ROIResult {
-    String name;         // "Udder", "Eyes", "Hooves"
-    double meanTempC;
-    double t95TempC;
-    double stdDev;
-    RiskStatus status;
-    String reason;       // "Udder ΔT 2.3°C above ambient"
+    public String name;         // "Udder", "Eyes", "Hooves"
+    public double meanTempC;
+    public double t95TempC;
+    public double stdDev;
+    public com.flir.atlassdk.acecamerasample.storage.RiskStatus status;
+    public String reason;       // "Udder ΔT 2.3°C above ambient"
 
-    ROIResult(String name,
+    public ROIResult(String name,
               double meanTempC,
               double t95TempC,
               double stdDev,
-              RiskStatus status,
+              com.flir.atlassdk.acecamerasample.storage.RiskStatus status,
               String reason) {
 
         this.name = name;

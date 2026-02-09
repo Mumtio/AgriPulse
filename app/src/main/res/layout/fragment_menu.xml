@@ -1,103 +1,215 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:padding="20dp">
+    android:background="#F6F8F7"
+    android:padding="24dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Greeting -->
+    <TextView
+        android:id="@+id/txtGreeting"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:text="Dashboard"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#1F2933"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Greeting -->
-        <TextView
-            android:id="@+id/txtGreeting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Welcome"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="#2F7D5A"
-            android:layout_marginBottom="24dp" />
+    <!-- Grid Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/gridContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/txtGreeting"
+        app:layout_constraintBottom_toTopOf="@id/buttonExit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
-        <!-- SCAN -->
-        <androidx.cardview.widget.CardView
+        <!-- SCAN Card (Top Left) -->
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardScan"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_marginBottom="14dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="8dp"
             app:cardBackgroundColor="#2F7D5A"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/cardHistory"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cardAnalytics"
+            app:layout_constraintDimensionRatio="1:1">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:orientation="vertical"
                 android:gravity="center"
-                android:text="SCAN"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white" />
-        </androidx.cardview.widget.CardView>
+                android:padding="16dp">
 
-        <!-- ANALYTICS -->
-        <androidx.cardview.widget.CardView
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:src="@drawable/ic_scan"
+                    android:contentDescription="Scan"
+                    app:tint="@android:color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Scan"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="12dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ANALYTICS Card (Top Right) -->
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardAnalytics"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_marginBottom="14dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="8dp"
             app:cardBackgroundColor="#2F7D5A"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/cardSettings"
+            app:layout_constraintStart_toEndOf="@id/cardScan"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintDimensionRatio="1:1">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:orientation="vertical"
                 android:gravity="center"
-                android:text="ANALYTICS"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white" />
-        </androidx.cardview.widget.CardView>
+                android:padding="16dp">
 
-        <!-- HISTORY -->
-        <androidx.cardview.widget.CardView
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:src="@drawable/ic_analytics"
+                    android:contentDescription="Analytics"
+                    app:tint="@android:color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Analytics"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="12dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- HISTORY Card (Bottom Left) -->
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardHistory"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_marginBottom="14dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="8dp"
             app:cardBackgroundColor="#2F7D5A"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:layout_constraintTop_toBottomOf="@id/cardScan"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cardSettings"
+            app:layout_constraintDimensionRatio="1:1">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:orientation="vertical"
                 android:gravity="center"
-                android:text="HISTORY"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white" />
-        </androidx.cardview.widget.CardView>
+                android:padding="16dp">
 
-        <!-- SETTINGS -->
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:src="@drawable/ic_history"
+                    android:contentDescription="History"
+                    app:tint="@android:color/white" />
 
-        <!-- EXIT -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonExit"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="EXIT"
-            android:textAllCaps="true"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="24dp"
-            app:cornerRadius="14dp"
-            app:backgroundTint="#2F7D5A" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="History"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="12dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
+        <!-- SETTINGS Card (Bottom Right) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardSettings"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="8dp"
+            app:cardBackgroundColor="#2F7D5A"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:layout_constraintTop_toBottomOf="@id/cardAnalytics"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cardHistory"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintDimensionRatio="1:1">
 
-    </LinearLayout>
-</ScrollView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:src="@drawable/ic_settings"
+                    android:contentDescription="Settings"
+                    app:tint="@android:color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Settings"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="12dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- EXIT Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonExit"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:text="Exit"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        app:cornerRadius="16dp"
+        app:backgroundTint="#D32F2F"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

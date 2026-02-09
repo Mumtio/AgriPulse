@@ -30,6 +30,11 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
     }
 
     private void applyStatusStyle(View indicator, TextView statusText, String status) {
+        // Handle null status
+        if (status == null) {
+            status = "Normal";
+        }
+        
         switch (status) {
             case "High":
                 indicator.setBackgroundResource(R.drawable.status_dot_red);

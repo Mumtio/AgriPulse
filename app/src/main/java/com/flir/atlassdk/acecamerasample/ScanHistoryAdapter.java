@@ -8,22 +8,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.flir.atlassdk.acecamerasample.storage.ScanRecord;
+
 import java.util.List;
 
 public class ScanHistoryAdapter extends RecyclerView.Adapter<ScanHistoryAdapter.ViewHolder> {
 
-    private final List<ScanResult> scans;
+    private final List<ScanRecord> scans;
     private final OnScanClickListener listener;
 
 
     public interface OnScanClickListener {
 
-        void onScanClick(ScanResult scan);
+        void onScanClick(ScanRecord scan);
 
     }
 
 
-    public ScanHistoryAdapter(List<ScanResult> scans,OnScanClickListener listener) {
+    public ScanHistoryAdapter(List<ScanRecord> scans,OnScanClickListener listener) {
         this.scans = scans;
         this.listener = listener;
     }
@@ -38,13 +40,19 @@ public class ScanHistoryAdapter extends RecyclerView.Adapter<ScanHistoryAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ScanResult scan = scans.get(position);
+        ScanRecord scan = scans.get(position);
+
+        // Ensure status is not null
+        String displayStatus = scan.status;
+        if (displayStatus == null) {
+            displayStatus = "SUSPECTED".equals(scan.overallStatus) ? "High" : "Normal";
+        }
 
         holder.temp.setText(String.format("%.1f °C", scan.temperature));
         holder.time.setText(scan.time);
-        holder.status.setText(scan.status);
+        holder.status.setText(displayStatus);
 
-        applyStatusStyle(holder.statusIndicator, holder.status, scan.status);
+        applyStatusStyle(holder.statusIndicator, holder.status, displayStatus);
         holder.itemView.setOnClickListener(v -> listener.onScanClick(scan));
 
     }

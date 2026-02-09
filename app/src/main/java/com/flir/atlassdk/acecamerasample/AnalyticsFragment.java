@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.flir.atlassdk.acecamerasample.storage.ScanRecord;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -39,15 +40,16 @@ public class AnalyticsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-
-
         TextView herdStats = view.findViewById(R.id.textHerdStats);
         TextView tempTrend = view.findViewById(R.id.textTempTrend);
         TextView hotZones = view.findViewById(R.id.textHotZones);
 
-        List<String> animalIds =
-                ScanStorage.getAllAnimalIds(requireContext());
+        // Get backend modules from MainActivity
+        MainActivity mainActivity = (MainActivity) requireActivity();
+        com.flir.atlassdk.acecamerasample.storage.ScanStorage scanStorage = mainActivity.getScanStorage();
+        com.flir.atlassdk.acecamerasample.tracking.AnimalTracker animalTracker = mainActivity.getAnimalTracker();
+
+        List<String> animalIds = animalTracker.getAllAnimalIds();
 
         if (animalIds.isEmpty()) {
             herdStats.setText("No scan data available.");
@@ -60,16 +62,18 @@ public class AnalyticsFragment extends Fragment {
         List<Double> allTemps = new ArrayList<>();
 
         for (String id : animalIds) {
-            List<ScanResult> scans =
-                    ScanStorage.getScansForAnimal(requireContext(), id);
+            List<ScanRecord> scans = scanStorage.getScansForAnimal(id);
 
             if (scans.isEmpty()) continue;
 
-            ScanResult last = scans.get(scans.size() - 1);
+            ScanRecord last = scans.get(scans.size() - 1);
 
             allTemps.add(last.temperature);
 
-            switch (last.status) {
+            // Handle null status
+            String status = last.status != null ? last.status : "Normal";
+            
+            switch (status) {
                 case "Normal":
                     normal++;
                     break;
@@ -91,7 +95,7 @@ public class AnalyticsFragment extends Fragment {
         );
 
         tempTrend.setText(buildTrendText(allTemps));
-        hotZones.setText(buildHotZoneText(animalIds));
+        hotZones.setText(buildHotZoneText(animalIds, scanStorage));
 
 
         PieChart pieChart = view.findViewById(R.id.herdPieChart);
@@ -134,16 +138,16 @@ public class AnalyticsFragment extends Fragment {
                 + String.format("%.2f", Math.abs(diff)) + "°C";
     }
 
-    private String buildHotZoneText(List<String> animalIds) {
+    private String buildHotZoneText(List<String> animalIds, 
+                                    com.flir.atlassdk.acecamerasample.storage.ScanStorage scanStorage) {
         StringBuilder builder = new StringBuilder();
 
         for (String id : animalIds) {
-            List<ScanResult> scans =
-                    ScanStorage.getScansForAnimal(requireContext(), id);
+            List<ScanRecord> scans = scanStorage.getScansForAnimal(id);
 
             if (scans.isEmpty()) continue;
 
-            ScanResult last = scans.get(scans.size() - 1);
+            ScanRecord last = scans.get(scans.size() - 1);
 
             if ("High".equals(last.status)) {
                 builder.append("• Animal ")
