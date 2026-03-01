@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Large tablet (10+ inch) adjustments -->
+    <dimen name="spacing_md">40dp</dimen>
+    <dimen name="spacing_lg">48dp</dimen>
+    <dimen name="spacing_xl">64dp</dimen>
+
+    <dimen name="text_size_body">18sp</dimen>
+    <dimen name="text_size_subheading">20sp</dimen>
+    <dimen name="text_size_heading">22sp</dimen>
+    <dimen name="text_size_title">26sp</dimen>
+    <dimen name="text_size_large_title">32sp</dimen>
+    <dimen name="text_size_display">48sp</dimen>
+
+    <dimen name="card_menu_height">88dp</dimen>
+    <dimen name="scan_overlay_size">380dp</dimen>
+</resources>

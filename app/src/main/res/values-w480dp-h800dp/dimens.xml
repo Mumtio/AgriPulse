@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- FLIR ACE Platform - 5" touchscreen (typical ~480x800dp) -->
+    <!-- Optimized for i34, i35, i64 cameras -->
+    
+    <!-- ACE Design System - 4px base scale -->
+    <dimen name="spacing_none">0dp</dimen>
+    <dimen name="spacing_xxs">4dp</dimen>
+    <dimen name="spacing_xs">8dp</dimen>
+    <dimen name="spacing_sm">16dp</dimen>
+    <dimen name="spacing_md">24dp</dimen>
+    <dimen name="spacing_lg">32dp</dimen>
+    <dimen name="spacing_xl">48dp</dimen>
+    <dimen name="spacing_xxl">64dp</dimen>
+
+    <!-- Touch targets - optimized for gloved use on 5" screen -->
+    <dimen name="touch_target_min">56dp</dimen>
+    <dimen name="touch_target_comfortable">64dp</dimen>
+    <dimen name="touch_target_large">80dp</dimen>
+
+    <!-- Button dimensions - larger for field use -->
+    <dimen name="button_height_standard">64dp</dimen>
+    <dimen name="button_height_large">80dp</dimen>
+    <dimen name="button_corner_radius">16dp</dimen>
+    <dimen name="card_corner_radius">16dp</dimen>
+
+    <!-- Bottom spacing for buttons (ACE standard) -->
+    <dimen name="button_bottom_margin">24dp</dimen>
+
+    <!-- Text sizes - optimized for 5" screen readability -->
+    <dimen name="text_size_small">13sp</dimen>
+    <dimen name="text_size_body">15sp</dimen>
+    <dimen name="text_size_subheading">17sp</dimen>
+    <dimen name="text_size_heading">19sp</dimen>
+    <dimen name="text_size_title">23sp</dimen>
+    <dimen name="text_size_large_title">28sp</dimen>
+    <dimen name="text_size_display">38sp</dimen>
+
+    <!-- Icon sizes -->
+    <dimen name="icon_size_small">28dp</dimen>
+    <dimen name="icon_size_medium">48dp</dimen>
+    <dimen name="icon_size_large">56dp</dimen>
+
+    <!-- Card dimensions -->
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_menu_height">80dp</dimen>
+
+    <!-- Scan overlay - optimized for 5" screen -->
+    <dimen name="scan_overlay_size">280dp</dimen>
+
+</resources>
