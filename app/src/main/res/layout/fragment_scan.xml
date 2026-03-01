@@ -17,19 +17,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <com.flir.atlassdk.acecamerasample.OverlayView
-        android:id="@+id/overlayView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <!-- Scan Overlay Box - responsive size -->
+    <!-- Scan Overlay Box -->
     <View
         android:id="@+id/scanOverlay"
-        android:layout_width="@dimen/scan_overlay_size"
-        android:layout_height="@dimen/scan_overlay_size"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
         android:background="@drawable/focus_outline"
-        android:clickable="false"
-        android:focusable="false"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,10 +34,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="--.- °C"
-        android:textSize="@dimen/text_size_display"
+        android:textSize="48sp"
         android:textStyle="bold"
         android:textColor="@android:color/white"
-        android:fontFamily="sans-serif-medium"
         app:layout_constraintTop_toTopOf="@id/scanOverlay"
         app:layout_constraintBottom_toBottomOf="@id/scanOverlay"
         app:layout_constraintStart_toStartOf="@id/scanOverlay"
@@ -66,26 +58,24 @@
             android:id="@+id/buttonBack"
             android:layout_width="@dimen/touch_target_min"
             android:layout_height="@dimen/touch_target_min"
-            android:background="@android:color/transparent"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_back"
             android:contentDescription="@string/back_button"
             android:focusable="true"
-            android:foreground="@drawable/focus_highlight"
             app:tint="@android:color/white" />
 
         <TextView
-            android:id="@+id/textScanHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/spacing_xs"
-            android:text="Align animal face in frame"
+            android:text="Thermal Scan"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/text_size_subheading"/>
+            android:textSize="20sp"
+            android:textStyle="bold"/>
     </LinearLayout>
 
     <!-- Bottom Controls -->
     <LinearLayout
-        android:id="@+id/bottomBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="@dimen/spacing_md"
@@ -93,56 +83,57 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_max="600dp">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <Button
-            android:id="@+id/buttonScan"
-            style="@style/Widget.ACE.Button"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height_standard"
-            android:maxWidth="400dp"
-            android:text="SCAN"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/text_size_heading"
-            android:backgroundTint="#2E7D32"
-            android:focusable="true"
-            android:foreground="@drawable/focus_highlight"/>
-
-        <Button
-            android:id="@+id/buttonShare"
-            style="@style/Widget.ACE.Button"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/touch_target_min"
-            android:maxWidth="400dp"
-            android:layout_marginTop="@dimen/spacing_xs"
-            android:text="📤 Share with Vet"
-            android:backgroundTint="#1565C0"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/text_size_body"
-            android:visibility="gone"
-            android:focusable="true"
-            android:foreground="@drawable/focus_highlight"/>
-
+        <!-- Status Text -->
         <TextView
             android:id="@+id/textScanResult"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_xs"
+            android:layout_marginBottom="@dimen/spacing_xs"
             android:text=""
             android:textColor="@android:color/white"
-            android:textSize="@dimen/text_size_body"
+            android:textSize="16sp"
+            android:textStyle="bold"
             android:gravity="center"/>
 
+        <!-- Explanation Text -->
         <TextView
             android:id="@+id/textExplanation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_xxs"
+            android:layout_marginBottom="@dimen/spacing_md"
             android:text=""
             android:textColor="#E0E0E0"
-            android:textSize="@dimen/text_size_body"
+            android:textSize="14sp"
             android:gravity="center"/>
+
+        <!-- Scan Button -->
+        <Button
+            android:id="@+id/buttonScan"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:maxWidth="400dp"
+            android:text="SCAN"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:backgroundTint="#2E7D32"
+            android:focusable="true"/>
+
+        <!-- Share Button -->
+        <Button
+            android:id="@+id/buttonShare"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:maxWidth="400dp"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:text="Share Report"
+            android:backgroundTint="#1976D2"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:visibility="gone"
+            android:focusable="true"/>
 
     </LinearLayout>
 
