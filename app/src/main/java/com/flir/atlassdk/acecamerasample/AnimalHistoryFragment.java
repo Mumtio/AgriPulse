@@ -49,19 +49,24 @@ public class AnimalHistoryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ImageButton backButton = view.findViewById(R.id.backButton);
-        TextView animalInfo = view.findViewById(R.id.animalInfo);
+        TextView animalIdText = view.findViewById(R.id.animalIdText);
+        TextView animalTypeText = view.findViewById(R.id.animalTypeText);
+        TextView totalScansText = view.findViewById(R.id.totalScansText);
+        TextView lastTempText = view.findViewById(R.id.lastTempText);
+        TextView trendText = view.findViewById(R.id.trendText);
         RecyclerView recyclerView = view.findViewById(R.id.scanRecyclerView);
 
         String animalId = getArguments().getString(ARG_ID);
         String animalType = getArguments().getString(ARG_TYPE);
 
-        animalInfo.setText("Animal ID: " + animalId + " · " + animalType);
+        animalIdText.setText(animalId);
+        animalTypeText.setText(animalType);
 
-        backButton.setOnClickListener(v ->
-                requireActivity()
-                        .getSupportFragmentManager()
-                        .popBackStack()
-        );
+        backButton.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
 
         // Initialize list + adapter ONCE
         scans = new ArrayList<>();
@@ -73,12 +78,6 @@ public class AnimalHistoryFragment extends Fragment {
                     scan.time
             );
 
-            if (scans.size() >= 2) {
-                ScanResult prev = scans.get(scans.size() - 2);
-                ScanResult curr = scans.get(scans.size() - 1);
-
-                rising = curr.temperature - prev.temperature >= 0.5;
-            }
             requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
@@ -89,6 +88,74 @@ public class AnimalHistoryFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
+
+        // Load scans and update stats
+        loadScansAndUpdateStats(animalId, totalScansText, lastTempText, trendText);
+    }
+
+    private void loadScansAndUpdateStats(String animalId, TextView totalScansText, 
+                                         TextView lastTempText, TextView trendText) {
+        scans.clear();
+        scans.addAll(ScanStorage.getScansForAnimal(requireContext(), animalId));
+
+        // Add sample data if no real data exists
+        if (scans.isEmpty()) {
+            scans.add(new ScanResult(38.2, "Normal", "3 days ago · 8:15 AM"));
+            scans.add(new ScanResult(38.5, "Normal", "2 days ago · 7:30 AM"));
+            scans.add(new ScanResult(39.1, "Elevated", "Yesterday · 6:45 AM"));
+            scans.add(new ScanResult(39.4, "Elevated", "Yesterday · 5:20 PM"));
+            scans.add(new ScanResult(39.7, "High", "Today · 6:45 AM"));
+        }
+
+        // Update stats
+        totalScansText.setText(String.valueOf(scans.size()));
+
+        if (!scans.isEmpty()) {
+            ScanResult lastScan = scans.get(scans.size() - 1);
+            lastTempText.setText(String.format("%.1f°C", lastScan.temperature));
+
+            // Apply color to last temp based on status
+            switch (lastScan.status) {
+                case "High":
+                    lastTempText.setTextColor(0xFFD32F2F);
+                    break;
+                case "Elevated":
+                    lastTempText.setTextColor(0xFFF57C00);
+                    break;
+                default:
+                    lastTempText.setTextColor(0xFF2E7D32);
+                    break;
+            }
+
+            // Calculate trend
+            if (scans.size() >= 2) {
+                ScanResult prev = scans.get(scans.size() - 2);
+                ScanResult curr = scans.get(scans.size() - 1);
+                double diff = curr.temperature - prev.temperature;
+
+                if (diff >= 0.5) {
+                    trendText.setText("↑ Rising");
+                    trendText.setTextColor(0xFFD32F2F);
+                    rising = true;
+                } else if (diff <= -0.5) {
+                    trendText.setText("↓ Falling");
+                    trendText.setTextColor(0xFF2E7D32);
+                    rising = false;
+                } else {
+                    trendText.setText("→ Stable");
+                    trendText.setTextColor(0xFF757575);
+                    rising = false;
+                }
+            } else {
+                trendText.setText("→ Stable");
+                trendText.setTextColor(0xFF757575);
+            }
+        }
+
+        // Notify adapter after data is loaded
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -96,12 +163,10 @@ public class AnimalHistoryFragment extends Fragment {
         super.onResume();
 
         String animalId = getArguments().getString(ARG_ID);
+        TextView totalScansText = getView().findViewById(R.id.totalScansText);
+        TextView lastTempText = getView().findViewById(R.id.lastTempText);
+        TextView trendText = getView().findViewById(R.id.trendText);
 
-        scans.clear();
-        scans.addAll(
-                ScanStorage.getScansForAnimal(requireContext(), animalId)
-        );
-
-        adapter.notifyDataSetChanged();
+        loadScansAndUpdateStats(animalId, totalScansText, lastTempText, trendText);
     }
 }

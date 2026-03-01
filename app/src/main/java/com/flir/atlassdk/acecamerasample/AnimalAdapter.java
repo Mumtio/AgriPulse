@@ -29,21 +29,24 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
         this.listener = listener;
     }
 
-    private void applyStatusStyle(View indicator, TextView statusText, String status) {
+    private void applyStatusStyle(View indicator, TextView statusText, TextView tempText, String status) {
         switch (status) {
             case "High":
                 indicator.setBackgroundResource(R.drawable.status_dot_red);
-                statusText.setTextColor(0xFFD32F2F);
+                statusText.setBackgroundResource(R.drawable.status_badge_red);
+                tempText.setTextColor(0xFFD32F2F);
                 break;
 
             case "Elevated":
                 indicator.setBackgroundResource(R.drawable.status_dot_amber);
-                statusText.setTextColor(0xFFF9A825);
+                statusText.setBackgroundResource(R.drawable.status_badge_amber);
+                tempText.setTextColor(0xFFF57C00);
                 break;
 
             default:
                 indicator.setBackgroundResource(R.drawable.status_dot_green);
-                statusText.setTextColor(0xFF2E7D32);
+                statusText.setBackgroundResource(R.drawable.status_badge_green);
+                tempText.setTextColor(0xFF2E7D32);
                 break;
         }
     }
@@ -62,14 +65,13 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Animal animal = animals.get(position);
 
-        holder.animalId.setText("Animal ID: " + animal.id);
+        holder.animalId.setText("ID: " + animal.id);
         holder.animalType.setText(animal.type);
-        holder.lastScan.setText("Last scan: " + animal.lastScanTime);
-        holder.temp.setText(String.format("%.1f °C", animal.lastTemp));
+        holder.lastScan.setText(animal.lastScanTime);
+        holder.temp.setText(String.format("%.1f°C", animal.lastTemp));
         holder.status.setText(animal.status);
-        applyStatusStyle(holder.statusIndicator, holder.status, animal.status);
+        applyStatusStyle(holder.statusIndicator, holder.status, holder.temp, animal.status);
         holder.itemView.setOnClickListener(v -> listener.onAnimalClick(animal));
-
     }
 
     @Override

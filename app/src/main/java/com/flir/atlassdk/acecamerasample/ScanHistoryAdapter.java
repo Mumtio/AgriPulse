@@ -40,11 +40,11 @@ public class ScanHistoryAdapter extends RecyclerView.Adapter<ScanHistoryAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ScanResult scan = scans.get(position);
 
-        holder.temp.setText(String.format("%.1f °C", scan.temperature));
+        holder.temp.setText(String.format("%.1f°C", scan.temperature));
         holder.time.setText(scan.time);
         holder.status.setText(scan.status);
 
-        applyStatusStyle(holder.statusIndicator, holder.status, scan.status);
+        applyStatusStyle(holder.statusIndicator, holder.status, holder.temp, scan.status);
         holder.itemView.setOnClickListener(v -> listener.onScanClick(scan));
 
     }
@@ -55,21 +55,24 @@ public class ScanHistoryAdapter extends RecyclerView.Adapter<ScanHistoryAdapter.
     }
 
     // same status logic as animal list
-    private void applyStatusStyle(View indicator, TextView statusText, String status) {
+    private void applyStatusStyle(View indicator, TextView statusText, TextView tempText, String status) {
         switch (status) {
             case "High":
                 indicator.setBackgroundResource(R.drawable.status_dot_red);
                 statusText.setTextColor(0xFFD32F2F);
+                tempText.setTextColor(0xFFD32F2F);
                 break;
 
             case "Elevated":
                 indicator.setBackgroundResource(R.drawable.status_dot_amber);
-                statusText.setTextColor(0xFFF9A825);
+                statusText.setTextColor(0xFFF57C00);
+                tempText.setTextColor(0xFFF57C00);
                 break;
 
             default:
                 indicator.setBackgroundResource(R.drawable.status_dot_green);
                 statusText.setTextColor(0xFF2E7D32);
+                tempText.setTextColor(0xFF2E7D32);
                 break;
         }
     }

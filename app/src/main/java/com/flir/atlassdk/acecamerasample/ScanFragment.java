@@ -182,10 +182,10 @@ public class ScanFragment extends Fragment {
             startActivity(Intent.createChooser(intent, "Share report via"));
         });
 
-        backButton.setOnClickListener(v ->
-                requireActivity()
-                        .getSupportFragmentManager()
-                        .popBackStack()
-        );
+        backButton.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
     }
 }

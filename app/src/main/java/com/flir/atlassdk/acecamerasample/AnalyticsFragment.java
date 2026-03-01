@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,10 +22,6 @@ import java.util.List;
 
 public class AnalyticsFragment extends Fragment {
 
-
-
-
-
     @Nullable
     @Override
     public View onCreateView(
@@ -39,20 +36,28 @@ public class AnalyticsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Back button
+        ImageButton backButton = view.findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
 
-
-
-        TextView herdStats = view.findViewById(R.id.textHerdStats);
+        TextView normalCount = view.findViewById(R.id.normalCount);
+        TextView elevatedCount = view.findViewById(R.id.elevatedCount);
+        TextView highCount = view.findViewById(R.id.highCount);
         TextView tempTrend = view.findViewById(R.id.textTempTrend);
         TextView hotZones = view.findViewById(R.id.textHotZones);
 
-        List<String> animalIds =
-                ScanStorage.getAllAnimalIds(requireContext());
+        List<String> animalIds = ScanStorage.getAllAnimalIds(requireContext());
 
         if (animalIds.isEmpty()) {
-            herdStats.setText("No scan data available.");
-            tempTrend.setText("No temperature trends yet.");
-            hotZones.setText("No hot zones detected.");
+            normalCount.setText("0");
+            elevatedCount.setText("0");
+            highCount.setText("0");
+            tempTrend.setText("No scan data available");
+            hotZones.setText("No alerts");
             return;
         }
 
@@ -60,13 +65,11 @@ public class AnalyticsFragment extends Fragment {
         List<Double> allTemps = new ArrayList<>();
 
         for (String id : animalIds) {
-            List<ScanResult> scans =
-                    ScanStorage.getScansForAnimal(requireContext(), id);
+            List<ScanResult> scans = ScanStorage.getScansForAnimal(requireContext(), id);
 
             if (scans.isEmpty()) continue;
 
             ScanResult last = scans.get(scans.size() - 1);
-
             allTemps.add(last.temperature);
 
             switch (last.status) {
@@ -82,47 +85,61 @@ public class AnalyticsFragment extends Fragment {
             }
         }
 
-        int total = normal + elevated + high;
+        // Update counts
+        normalCount.setText(String.valueOf(normal));
+        elevatedCount.setText(String.valueOf(elevated));
+        highCount.setText(String.valueOf(high));
 
-        herdStats.setText(
-                "Normal: " + percent(normal, total) + "%\n" +
-                        "Monitor: " + percent(elevated, total) + "%\n" +
-                        "High Risk: " + percent(high, total) + "%"
-        );
-
+        // Update trend
         tempTrend.setText(buildTrendText(allTemps));
+        
+        // Update hot zones
         hotZones.setText(buildHotZoneText(animalIds));
 
+        // Setup pie chart
+        setupPieChart(view, normal, elevated, high);
+    }
 
+    private void setupPieChart(View view, int normal, int elevated, int high) {
         PieChart pieChart = view.findViewById(R.id.herdPieChart);
 
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(normal, "Normal"));
-        entries.add(new PieEntry(elevated, "Monitor"));
-        entries.add(new PieEntry(high, "High Risk"));
+        if (normal > 0) entries.add(new PieEntry(normal, "Normal"));
+        if (elevated > 0) entries.add(new PieEntry(elevated, "Monitor"));
+        if (high > 0) entries.add(new PieEntry(high, "High Risk"));
+
+        if (entries.isEmpty()) {
+            pieChart.setVisibility(View.GONE);
+            return;
+        }
 
         PieDataSet dataSet = new PieDataSet(entries, "");
         dataSet.setColors(
-                Color.parseColor("#66BB6A"),
-                Color.parseColor("#FFA726"),
-                Color.parseColor("#EF5350")
+                Color.parseColor("#66BB6A"),  // Green
+                Color.parseColor("#FFA726"),  // Orange
+                Color.parseColor("#EF5350")   // Red
         );
+        dataSet.setValueTextSize(14f);
+        dataSet.setValueTextColor(Color.WHITE);
 
         PieData data = new PieData(dataSet);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTextSize(12f);
-
+        
         pieChart.setData(data);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.setHoleColor(Color.TRANSPARENT);
+        pieChart.setHoleRadius(45f);
+        pieChart.setTransparentCircleRadius(50f);
+        pieChart.setDrawEntryLabels(false);
+        pieChart.getLegend().setEnabled(true);
+        pieChart.getLegend().setTextSize(12f);
+        pieChart.animateY(1000);
         pieChart.invalidate();
-    }
-
-    private int percent(int value, int total) {
-        return total == 0 ? 0 : (value * 100 / total);
     }
 
     private String buildTrendText(List<Double> temps) {
         if (temps.size() < 2) {
-            return "Not enough data for trend analysis.";
+            return "Not enough data for trend analysis";
         }
 
         double first = temps.get(0);
@@ -130,34 +147,33 @@ public class AnalyticsFragment extends Fragment {
         double diff = last - first;
 
         String arrow = diff >= 0 ? "↑" : "↓";
-        return "Average temperature " + arrow + " "
-                + String.format("%.2f", Math.abs(diff)) + "°C";
+        String direction = diff >= 0 ? "increased" : "decreased";
+        
+        return "Average temperature " + direction + " " + arrow + " "
+                + String.format("%.1f", Math.abs(diff)) + "°C";
     }
 
     private String buildHotZoneText(List<String> animalIds) {
-        StringBuilder builder = new StringBuilder();
+        int highRiskCount = 0;
 
         for (String id : animalIds) {
-            List<ScanResult> scans =
-                    ScanStorage.getScansForAnimal(requireContext(), id);
+            List<ScanResult> scans = ScanStorage.getScansForAnimal(requireContext(), id);
 
             if (scans.isEmpty()) continue;
 
             ScanResult last = scans.get(scans.size() - 1);
 
             if ("High".equals(last.status)) {
-                builder.append("• Animal ")
-                        .append(id)
-                        .append(" — High\n");
+                highRiskCount++;
             }
         }
 
-        if (builder.length() == 0) {
-            return "No hot zones detected.";
+        if (highRiskCount == 0) {
+            return "No high-risk animals detected";
+        } else if (highRiskCount == 1) {
+            return "1 animal requires attention";
+        } else {
+            return highRiskCount + " animals require attention";
         }
-
-        return builder.toString();
     }
-
-
 }

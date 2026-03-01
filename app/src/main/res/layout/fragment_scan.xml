@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000">
@@ -23,13 +22,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-
-
-    <!-- Scan Overlay Box -->
+    <!-- Scan Overlay Box - responsive size -->
     <View
         android:id="@+id/scanOverlay"
-        android:layout_width="260dp"
-        android:layout_height="260dp"
+        android:layout_width="@dimen/scan_overlay_size"
+        android:layout_height="@dimen/scan_overlay_size"
         android:background="@drawable/focus_outline"
         android:clickable="false"
         android:focusable="false"
@@ -37,12 +34,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Temperature Display -->
     <TextView
         android:id="@+id/tempText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="--.- °C"
-        android:textSize="28sp"
+        android:textSize="@dimen/text_size_display"
         android:textStyle="bold"
         android:textColor="@android:color/white"
         android:fontFamily="sans-serif-medium"
@@ -51,15 +50,12 @@
         app:layout_constraintStart_toStartOf="@id/scanOverlay"
         app:layout_constraintEnd_toEndOf="@id/scanOverlay"/>
 
-
-
-
     <!-- Top Bar -->
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:padding="@dimen/spacing_sm"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent"
@@ -68,20 +64,23 @@
 
         <ImageButton
             android:id="@+id/buttonBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/touch_target_min"
+            android:layout_height="@dimen/touch_target_min"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_back"
+            android:contentDescription="@string/back_button"
+            android:focusable="true"
+            android:foreground="@drawable/focus_highlight"
             app:tint="@android:color/white" />
 
         <TextView
             android:id="@+id/textScanHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="@dimen/spacing_xs"
             android:text="Align animal face in frame"
             android:textColor="@android:color/white"
-            android:textSize="16sp"/>
+            android:textSize="@dimen/text_size_subheading"/>
     </LinearLayout>
 
     <!-- Bottom Controls -->
@@ -89,51 +88,61 @@
         android:id="@+id/bottomBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="20dp"
+        android:padding="@dimen/spacing_md"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_max="600dp">
 
         <Button
             android:id="@+id/buttonScan"
-            android:layout_width="220dp"
-            android:layout_height="56dp"
+            style="@style/Widget.ACE.Button"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height_standard"
+            android:maxWidth="400dp"
             android:text="SCAN"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:backgroundTint="#2E7D32"/>
+            android:textSize="@dimen/text_size_heading"
+            android:backgroundTint="#2E7D32"
+            android:focusable="true"
+            android:foreground="@drawable/focus_highlight"/>
+
         <Button
             android:id="@+id/buttonShare"
-            android:layout_width="220dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="10dp"
+            style="@style/Widget.ACE.Button"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/touch_target_min"
+            android:maxWidth="400dp"
+            android:layout_marginTop="@dimen/spacing_xs"
             android:text="📤 Share with Vet"
             android:backgroundTint="#1565C0"
             android:textColor="@android:color/white"
-            android:visibility="gone"/>
-
+            android:textSize="@dimen/text_size_body"
+            android:visibility="gone"
+            android:focusable="true"
+            android:foreground="@drawable/focus_highlight"/>
 
         <TextView
             android:id="@+id/textScanResult"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/spacing_xs"
             android:text=""
             android:textColor="@android:color/white"
-            android:textSize="14sp"/>
-
+            android:textSize="@dimen/text_size_body"
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/textExplanation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/spacing_xxs"
             android:text=""
             android:textColor="#E0E0E0"
-            android:textSize="14sp"/>
-
+            android:textSize="@dimen/text_size_body"
+            android:gravity="center"/>
 
     </LinearLayout>
 

@@ -11,7 +11,39 @@
         <item name="colorSecondaryVariant">#1B5E20</item>
         <item name="colorOnSecondary">@android:color/white</item>
 
+        <!-- Enable focus highlighting for physical button navigation -->
+        <item name="android:colorFocusedHighlight">#4CAF50</item>
     </style>
 
+    <!-- ACE Button Style - glove-friendly, focus-enabled -->
+    <style name="Widget.ACE.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:minHeight">@dimen/button_height_standard</item>
+        <item name="android:minWidth">@dimen/touch_target_min</item>
+        <item name="cornerRadius">@dimen/button_corner_radius</item>
+        <item name="android:textSize">@dimen/text_size_subheading</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">false</item>
+    </style>
+
+    <!-- ACE Card Style -->
+    <style name="Widget.ACE.Card" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">@dimen/card_corner_radius</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <!-- ACE Menu Card - large touch target -->
+    <style name="Widget.ACE.MenuCard" parent="Widget.ACE.Card">
+        <item name="android:layout_height">@dimen/card_menu_height</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_sm</item>
+    </style>
+
+    <!-- ACE Icon Button - physical button friendly -->
+    <style name="Widget.ACE.IconButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:minWidth">@dimen/touch_target_min</item>
+        <item name="android:minHeight">@dimen/touch_target_min</item>
+        <item name="android:focusable">true</item>
+    </style>
 
 </resources>

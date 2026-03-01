@@ -1,5 +1,22 @@
 <resources>
-    <string name="app_name">AceCamera</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="app_name">AgriPulse</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    
+    <!-- Landing Screen -->
+    <string name="tagline">Thermal Intelligence for Livestock Health</string>
+    <string name="feature_1">Early illness detection</string>
+    <string name="feature_2">Real-time thermal monitoring</string>
+    <string name="feature_3">Comprehensive herd analytics</string>
+    <string name="powered_by">Powered by FLIR Thermal Technology</string>
+    <string name="get_started">Get Started</string>
+    
+    <!-- Accessibility -->
+    <string name="back_button">Back</string>
+    <string name="filter_button">Filter</string>
+    <string name="scan_button">Scan</string>
+    <string name="share_button">Share with Vet</string>
+    
+    <!-- Content descriptions -->
+    <string name="logo_description">AgriPulse Logo</string>
+    <string name="thermal_camera_view">Thermal camera view</string>
 </resources>

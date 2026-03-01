@@ -48,49 +48,52 @@ public class ScanDetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ImageButton backButton = view.findViewById(R.id.backButton);
+        View statusIndicator = view.findViewById(R.id.statusIndicator);
         TextView tempText = view.findViewById(R.id.tempText);
         TextView statusText = view.findViewById(R.id.statusText);
         TextView timeText = view.findViewById(R.id.timeText);
+        TextView guidanceText = view.findViewById(R.id.guidanceText);
 
         double temp = getArguments().getDouble(ARG_TEMP);
         String status = getArguments().getString(ARG_STATUS);
         String time = getArguments().getString(ARG_TIME);
 
-        tempText.setText(String.format("%.1f °C", temp));
+        tempText.setText(String.format("%.1f°C", temp));
         statusText.setText(status);
         timeText.setText(time);
-        applyStatusStyle(tempText, statusText, status);
-
-
-        backButton.setOnClickListener(v ->
-                requireActivity()
-                        .getSupportFragmentManager()
-                        .popBackStack()
-        );
-
-        TextView guidanceText = view.findViewById(R.id.guidanceText);
         guidanceText.setText(getGuidanceForStatus(status));
 
+        applyStatusStyle(statusIndicator, tempText, statusText, status);
 
-
+        backButton.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
     }
 
 
-    private void applyStatusStyle(TextView tempText, TextView statusText, String status) {
+    private void applyStatusStyle(View indicator, TextView tempText, TextView statusText, String status) {
         switch (status) {
             case "High":
+                indicator.setBackgroundResource(R.drawable.status_dot_red);
                 tempText.setTextColor(0xFFD32F2F);
-                statusText.setTextColor(0xFFD32F2F);
+                statusText.setBackgroundResource(R.drawable.status_badge_red);
+                statusText.setText("High Risk");
                 break;
 
             case "Elevated":
-                tempText.setTextColor(0xFFF9A825);
-                statusText.setTextColor(0xFFF9A825);
+                indicator.setBackgroundResource(R.drawable.status_dot_amber);
+                tempText.setTextColor(0xFFF57C00);
+                statusText.setBackgroundResource(R.drawable.status_badge_amber);
+                statusText.setText("Elevated");
                 break;
 
             default:
+                indicator.setBackgroundResource(R.drawable.status_dot_green);
                 tempText.setTextColor(0xFF2E7D32);
-                statusText.setTextColor(0xFF2E7D32);
+                statusText.setBackgroundResource(R.drawable.status_badge_green);
+                statusText.setText("Normal");
                 break;
         }
     }

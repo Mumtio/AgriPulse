@@ -4,82 +4,151 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    app:cardCornerRadius="14dp"
-    app:cardElevation="3dp"
-    app:cardBackgroundColor="#E6F4EA">
+    android:layout_marginBottom="@dimen/spacing_md"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:padding="@dimen/spacing_md"
+        android:orientation="vertical">
 
-        <!-- Status Indicator -->
-        <View
-            android:id="@+id/statusIndicator"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:background="@drawable/status_dot_green"
-            android:layout_marginEnd="12dp"/>
-
-        <!-- Animal Info -->
+        <!-- Top Row: ID and Status -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/spacing_xs">
+
+            <View
+                android:id="@+id/statusIndicator"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/status_dot_green"
+                android:layout_marginEnd="@dimen/spacing_sm"/>
 
             <TextView
                 android:id="@+id/animalIdText"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Animal ID: DC–014"
                 android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="#1F2933"/>
-
-            <TextView
-                android:id="@+id/animalTypeText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Dairy Cattle"
-                android:textSize="13sp"
-                android:textColor="#6B7280"/>
-
-            <TextView
-                android:id="@+id/lastScanText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Last scan: Today · 6:45 AM"
-                android:textSize="12sp"
-                android:textColor="#6B7280"/>
-        </LinearLayout>
-
-        <!-- Temperature & Status -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="end">
-
-            <TextView
-                android:id="@+id/tempText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="39.7 °C"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="#1F2933"/>
+                android:textSize="18sp"
+                android:textColor="#212121"/>
 
             <TextView
                 android:id="@+id/statusText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingStart="@dimen/spacing_sm"
+                android:paddingEnd="@dimen/spacing_sm"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
                 android:text="High"
-                android:textSize="13sp"
-                android:textColor="#D32F2F"/>
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/status_badge_red"/>
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:layout_marginBottom="@dimen/spacing_xs"/>
+
+        <!-- Bottom Row: Info and Temperature -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Left: Type and Time -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="4dp">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_animal"
+                        app:tint="#757575"/>
+
+                    <TextView
+                        android:id="@+id/animalTypeText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="Dairy Cattle"
+                        android:textSize="14sp"
+                        android:textColor="#757575"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_time"
+                        app:tint="#9E9E9E"/>
+
+                    <TextView
+                        android:id="@+id/lastScanText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="Today · 6:45 AM"
+                        android:textSize="13sp"
+                        android:textColor="#9E9E9E"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Right: Temperature Display -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/temp_display_bg"
+                android:padding="@dimen/spacing_sm">
+
+                <TextView
+                    android:id="@+id/tempText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="39.7°C"
+                    android:textStyle="bold"
+                    android:textSize="24sp"
+                    android:textColor="#D32F2F"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Temperature"
+                    android:textSize="10sp"
+                    android:textColor="#757575"/>
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

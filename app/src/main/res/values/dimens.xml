@@ -1,13 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Vertical spacing -->
-    <dimen name="space_xs">4dp</dimen>
-    <dimen name="space_sm">8dp</dimen>
-    <dimen name="space_md">16dp</dimen>
-    <dimen name="space_lg">24dp</dimen>
-    <dimen name="space_xl">32dp</dimen>
+    <!-- ACE Design System - 4px base scale -->
+    <!-- Spacing: 8px, 16px, 24px, 32px, 48px -->
+    <dimen name="spacing_none">0dp</dimen>
+    <dimen name="spacing_xxs">4dp</dimen>
+    <dimen name="spacing_xs">8dp</dimen>
+    <dimen name="spacing_sm">16dp</dimen>
+    <dimen name="spacing_md">24dp</dimen>
+    <dimen name="spacing_lg">32dp</dimen>
+    <dimen name="spacing_xl">48dp</dimen>
+    <dimen name="spacing_xxl">64dp</dimen>
 
-    <!-- Button bottom spacing -->
+    <!-- Touch targets - glove-friendly minimum 48dp -->
+    <dimen name="touch_target_min">48dp</dimen>
+    <dimen name="touch_target_comfortable">56dp</dimen>
+    <dimen name="touch_target_large">72dp</dimen>
+
+    <!-- Button dimensions -->
+    <dimen name="button_height_standard">56dp</dimen>
+    <dimen name="button_height_large">72dp</dimen>
+    <dimen name="button_corner_radius">14dp</dimen>
+    <dimen name="card_corner_radius">16dp</dimen>
+
+    <!-- Bottom spacing for buttons (ACE standard) -->
     <dimen name="button_bottom_margin">24dp</dimen>
+
+    <!-- Text sizes -->
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_body">14sp</dimen>
+    <dimen name="text_size_subheading">16sp</dimen>
+    <dimen name="text_size_heading">18sp</dimen>
+    <dimen name="text_size_title">22sp</dimen>
+    <dimen name="text_size_large_title">26sp</dimen>
+    <dimen name="text_size_display">36sp</dimen>
+
+    <!-- Icon sizes -->
+    <dimen name="icon_size_small">24dp</dimen>
+    <dimen name="icon_size_medium">40dp</dimen>
+    <dimen name="icon_size_large">48dp</dimen>
+
+    <!-- Card dimensions -->
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_menu_height">72dp</dimen>
+
+    <!-- Scan overlay -->
+    <dimen name="scan_overlay_size">260dp</dimen>
 
 </resources>

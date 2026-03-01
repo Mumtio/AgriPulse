@@ -10,23 +10,15 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link menufragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Professional menu screen with grid layout
  */
 public class menufragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -34,15 +26,6 @@ public class menufragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment menufragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static menufragment newInstance(String param1, String param2) {
         menufragment fragment = new menufragment();
         Bundle args = new Bundle();
@@ -64,7 +47,6 @@ public class menufragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_menu, container, false);
     }
 
@@ -83,7 +65,6 @@ public class menufragment extends Fragment {
                 .commit();
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -97,13 +78,13 @@ public class menufragment extends Fragment {
         view.findViewById(R.id.cardHistory).setOnClickListener(v ->
                 openFragment(new HistoryFragment()));
 
-        //view.findViewById(R.id.cardSettings).setOnClickListener(v ->
-            //    openFragment(new SettingsFragment()));
+        view.findViewById(R.id.cardSettings).setOnClickListener(v ->
+                openFragment(new SettingsFragment()));
 
         view.findViewById(R.id.buttonExit).setOnClickListener(v ->
                 requireActivity().finish());
 
-        // ✅ BACK BUTTON HANDLING (physical + gesture + FLIR hardware)
+        // Back button handling
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
@@ -116,7 +97,4 @@ public class menufragment extends Fragment {
                 }
         );
     }
-
-
-
 }
