@@ -1,7 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="colorLightGray">#C3C3C3</color>
+    <!-- Primary Colors -->
+    <color name="primary">#2E7D32</color>
+    <color name="primary_dark">#1B5E20</color>
+    <color name="primary_light">#4CAF50</color>
+    
+    <!-- Accent Colors -->
+    <color name="accent">#FF6F00</color>
+    <color name="accent_dark">#E65100</color>
+    <color name="accent_light">#FFA726</color>
+    
+    <!-- Background Colors -->
+    <color name="background">#F5F7FA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F8F9FA</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="text_tertiary">#9CA3AF</color>
+    
+    <!-- Status Colors -->
+    <color name="status_normal">#10B981</color>
+    <color name="status_warning">#F59E0B</color>
+    <color name="status_danger">#EF4444</color>
+    
+    <!-- Semantic Colors -->
+    <color name="success">#10B981</color>
+    <color name="warning">#F59E0B</color>
+    <color name="error">#EF4444</color>
+    <color name="info">#3B82F6</color>
+    
+    <!-- Legacy Colors (for compatibility) -->
+    <color name="colorPrimary">#2E7D32</color>
+    <color name="colorPrimaryDark">#1B5E20</color>
+    <color name="colorAccent">#FF6F00</color>
+    <color name="colorLightGray">#E5E7EB</color>
+    
+    <!-- Overlay Colors -->
+    <color name="overlay_dark">#CC000000</color>
+    <color name="overlay_light">#33000000</color>
+    
+    <!-- Divider -->
+    <color name="divider">#E5E7EB</color>
 </resources>

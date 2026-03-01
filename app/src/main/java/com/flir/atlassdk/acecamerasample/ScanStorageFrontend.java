@@ -3,18 +3,20 @@ package com.flir.atlassdk.acecamerasample;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.flir.atlassdk.acecamerasample.storage.ScanRecord;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScanStorage {
+public class ScanStorageFrontend {
 
     private static final String PREF_NAME = "scan_storage";
     private static final String KEY_SCANS = "scans";
 
-    public static void saveScan(Context context, ScanResult scan, String animalId) {
+    public static void saveScan(Context context, ScanRecord scan, String animalId) {
         SharedPreferences prefs =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 
@@ -39,8 +41,8 @@ public class ScanStorage {
         }
     }
 
-    public static List<ScanResult> getScansForAnimal(Context context, String animalId) {
-        List<ScanResult> list = new ArrayList<>();
+    public static List<ScanRecord> getScansForAnimal(Context context, String animalId) {
+        List<ScanRecord> list = new ArrayList<>();
 
         SharedPreferences prefs =
                 context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -53,7 +55,7 @@ public class ScanStorage {
 
                 if (!obj.getString("animalId").equals(animalId)) continue;
 
-                list.add(new ScanResult(
+                list.add(new ScanRecord(
                         obj.getDouble("temperature"),
                         obj.getString("status"),
                         obj.getString("time")

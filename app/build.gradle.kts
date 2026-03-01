@@ -75,16 +75,17 @@ android {
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.jetbrains.annotations)
     implementation(libs.android.material)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    //implementation(files("libs/flir-atlas-sdk.aar"))
 
+    // Gson for JSON storage
+    implementation("com.google.code.gson:gson:2.10.1")
 
-
-    implementation("", name = "androidsdk-release", ext = "aar")
-    implementation("", name = "thermalsdk-release", ext = "aar")
+    // FLIR SDK AAR files
+    implementation(files("libs/androidsdk-release.aar"))
+    implementation(files("libs/thermalsdk-release.aar"))
 }
