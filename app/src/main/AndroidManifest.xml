@@ -11,12 +11,15 @@
     <uses-permission android:name="android.permission.CAMERA"/>
     <!-- Internet permission required to communicate with camera internal resources (via SDK) due to ACE architectural design -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Network state permission for checking connectivity -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/Theme.AceCameraSample" >
+        android:theme="@style/Theme.AceCameraSample"
+        android:usesCleartextTraffic="true" >
 
         <activity android:name=".MainActivity"
             android:exported="true"

@@ -13,11 +13,11 @@ plugins {
 apply<KotlinAndroidPluginWrapper>()
 
 android {
-    namespace = "com.flir.atlassdk.acecamerasample"
+    namespace = "com.agripulse.cattlehealth"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.flir.atlassdk.acecamerasample"
+        applicationId = "com.agripulse.cattlehealth"
         minSdk = 33
         targetSdk = 36
         versionCode = 1
@@ -84,6 +84,9 @@ dependencies {
 
     // Gson for JSON storage
     implementation("com.google.code.gson:gson:2.10.1")
+    
+    // OkHttp for reliable multipart uploads
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     // FLIR SDK AAR files
     implementation(files("libs/androidsdk-release.aar"))

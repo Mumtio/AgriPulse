@@ -15,7 +15,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Video preview for simulation mode -->
+        <ImageView
+            android:id="@+id/videoPreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
     <!-- Scan Overlay Box -->
     <View
@@ -72,6 +82,49 @@
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+
+        <!-- Video Controls (only visible in simulation mode) -->
+        <LinearLayout
+            android:id="@+id/videoControls"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageButton
+                android:id="@+id/buttonPrevVideo"
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_media_previous"
+                android:contentDescription="Previous Video"
+                app:tint="@android:color/white" />
+
+            <TextView
+                android:id="@+id/videoInfoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="@dimen/spacing_xs"
+                android:text="1/3"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"/>
+
+            <ImageButton
+                android:id="@+id/buttonNextVideo"
+                android:layout_width="@dimen/touch_target_min"
+                android:layout_height="@dimen/touch_target_min"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_media_next"
+                android:contentDescription="Next Video"
+                app:tint="@android:color/white" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Bottom Controls -->

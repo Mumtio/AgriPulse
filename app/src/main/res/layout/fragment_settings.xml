@@ -102,12 +102,16 @@
                             android:textColor="#424242"/>
 
                         <TextView
+                            android:id="@+id/normalThresholdText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="&lt; 38.5°C"
                             android:textSize="15sp"
                             android:textStyle="bold"
-                            android:textColor="#2E7D32"/>
+                            android:textColor="#2E7D32"
+                            android:background="?attr/selectableItemBackground"
+                            android:padding="4dp"
+                            android:focusable="true"/>
                     </LinearLayout>
 
                     <!-- Elevated Range -->
@@ -133,12 +137,16 @@
                             android:textColor="#424242"/>
 
                         <TextView
+                            android:id="@+id/elevatedThresholdText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="38.5 - 39.5°C"
                             android:textSize="15sp"
                             android:textStyle="bold"
-                            android:textColor="#F57C00"/>
+                            android:textColor="#F57C00"
+                            android:background="?attr/selectableItemBackground"
+                            android:padding="4dp"
+                            android:focusable="true"/>
                     </LinearLayout>
 
                     <!-- High Range -->
@@ -163,12 +171,16 @@
                             android:textColor="#424242"/>
 
                         <TextView
+                            android:id="@+id/highRiskThresholdText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="&gt; 39.5°C"
                             android:textSize="15sp"
                             android:textStyle="bold"
-                            android:textColor="#D32F2F"/>
+                            android:textColor="#D32F2F"
+                            android:background="?attr/selectableItemBackground"
+                            android:padding="4dp"
+                            android:focusable="true"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

@@ -132,7 +132,7 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- Overlay View for Keypoints -->
-    <com.flir.atlassdk.acecamerasample.OverlayViewFrontend
+    <com.agripulse.cattlehealth.OverlayViewFrontend
         android:id="@+id/overlayView"
         android:layout_width="0dp"
         android:layout_height="0dp"

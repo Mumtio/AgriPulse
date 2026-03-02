@@ -193,7 +193,7 @@ adb install app/build/outputs/apk/release/app-release.apk
 
 #### Launch App
 ```bash
-adb shell am start -n com.flir.atlassdk.acecamerasample/.MainActivity
+adb shell am start -n com.agripulse.cattlehealth/.MainActivity
 ```
 
 #### Check Logs
@@ -356,7 +356,7 @@ adb install path/to/app.apk
 
 **Uninstall app:**
 ```bash
-adb uninstall com.flir.atlassdk.acecamerasample
+adb uninstall com.agripulse.cattlehealth
 ```
 
 **View logs:**

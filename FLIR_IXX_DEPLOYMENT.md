@@ -272,7 +272,7 @@ adb shell settings put global debug_view_attributes 1
 
 3. Check camera permissions:
 ```bash
-adb shell dumpsys package com.flir.atlassdk.acecamerasample | grep permission
+adb shell dumpsys package com.agripulse.cattlehealth | grep permission
 ```
 
 ### App Crashes on Launch
@@ -307,7 +307,7 @@ adb logcat | grep -i "agripulse\|flir\|thermal"
 - Typical storage: <10MB for 100 scans
 - To clear data:
 ```bash
-adb shell pm clear com.flir.atlassdk.acecamerasample
+adb shell pm clear com.agripulse.cattlehealth
 ```
 
 ### Network Usage (i35 with LTE)
@@ -330,7 +330,7 @@ adb install -r app-release.apk
 
 ```bash
 # Backup app data
-adb backup -f agripulse-backup.ab com.flir.atlassdk.acecamerasample
+adb backup -f agripulse-backup.ab com.agripulse.cattlehealth
 
 # Restore app data
 adb restore agripulse-backup.ab
@@ -339,7 +339,7 @@ adb restore agripulse-backup.ab
 ### Uninstalling
 
 ```bash
-adb uninstall com.flir.atlassdk.acecamerasample
+adb uninstall com.agripulse.cattlehealth
 ```
 
 ## Production Deployment
@@ -395,13 +395,13 @@ adb install -r app-release.apk
 adb logcat | grep -i agripulse
 
 # Check app info
-adb shell dumpsys package com.flir.atlassdk.acecamerasample
+adb shell dumpsys package com.agripulse.cattlehealth
 
 # Clear app data
-adb shell pm clear com.flir.atlassdk.acecamerasample
+adb shell pm clear com.agripulse.cattlehealth
 
 # Uninstall app
-adb uninstall com.flir.atlassdk.acecamerasample
+adb uninstall com.agripulse.cattlehealth
 
 # Take screenshot
 adb shell screencap -p /sdcard/screenshot.png
